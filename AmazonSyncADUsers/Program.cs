@@ -23,7 +23,7 @@ namespace AmazonSyncADUsers
             ServiceBase.Run(ServicesToRun);
 #else
             Service1 service = new Service1();
-            service.Iniciar();
+            service.StartService();
 
             System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
 #endif

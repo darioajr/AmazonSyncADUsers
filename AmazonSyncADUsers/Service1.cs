@@ -40,10 +40,10 @@ namespace AmazonSyncADUsers
 
         protected override void OnStart(string[] args)
         {
-            Start();
+            StartService();
         }
 
-        public void Start()
+        public void StartService()
         {
             try
             {
@@ -95,10 +95,10 @@ namespace AmazonSyncADUsers
         }
         protected override void OnStop()
         {
-            Stop();
+            StopService();
         }
 
-        protected void Stop()
+        protected void StopService()
         {
             _aTimer.Stop();
             _aTimer.Dispose();
