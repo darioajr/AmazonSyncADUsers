@@ -17,14 +17,14 @@ namespace AmazonSyncADUsers
     {
         private int _TimeSync = int.Parse(System.Configuration.ConfigurationManager.AppSettings["TimeSync"].ToString());
 
-        //evento de execução em lote
+        // Event batch execution
         public System.Timers.Timer _aTimer;
 
         public Service1()
         {
             InitializeComponent();
 
-            //registra no eventlog
+            // Create eventlog source
             if (!System.Diagnostics.EventLog.SourceExists("AmazonSyncADUsers"))
             {
                 System.Diagnostics.EventLog.CreateEventSource(
@@ -40,18 +40,17 @@ namespace AmazonSyncADUsers
 
         protected override void OnStart(string[] args)
         {
-            //inicializa o sistema de processamento
-            Iniciar();
+            Start();
         }
 
-        public void Iniciar()
+        public void Start()
         {
             try
             {
-                //grava log
+                // Register info in eventlog
                 eventLog1.WriteEntry("In OnStart");
 
-                //inicia evento de processamento das mensagens
+                // Init the timer
                 _aTimer = new System.Timers.Timer();
                 _aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 _aTimer.Interval = _TimeSync;
@@ -66,41 +65,40 @@ namespace AmazonSyncADUsers
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            //por segurança, PARA o evento, pois este processo pode demorar,
-            //e não podemos correr o risco de executar em paralelo
+            // For security, STOP the timer
             _aTimer.Stop();
 
             try
             {
                 var users = new List<string>();
 
-                //lista usuarios do AD que tem acesso ao grupo da amazon
+                // List AD users that in the group
                 ActiveDirectoryHelper.GetAllUsersOnGroup(users);
 
-                //remove acesso dos usuarios na amazon que nao estejam no grupo do AD
+                // Remove access from users in IAM that don´t in the AD group
                 AmazonS3Helper.RemoveUsersNotIn(users);
 
-                //concede acesso a novos usuarios do AD no grupo amazon
+                // Grant access to new users in the AD group
                 AmazonS3Helper.CreateUsers(users);
 
-                //reinicia o processamento de próximos registros
+                // Restart the timer
                 _aTimer.Start();
             }
             catch (Exception ex)
             {
-                //grava informações no log de eventos do windows
+                // Write error on the eventos
                 eventLog1.WriteEntry("OnTimedEvent Exception = " + ex.Message, EventLogEntryType.Error);
 
-                //reinicia o processamento de próximos registros
+                // Restart the timer
                 _aTimer.Start();
             }
         }
         protected override void OnStop()
         {
-            Parar();
+            Stop();
         }
 
-        protected void Parar()
+        protected void Stop()
         {
             _aTimer.Stop();
             _aTimer.Dispose();

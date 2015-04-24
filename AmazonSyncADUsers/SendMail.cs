@@ -31,6 +31,7 @@ namespace AmazonSyncADUsers
             }
             catch (Exception ex)
             {
+                //TODO: Implement log
                 throw;
             }
         }

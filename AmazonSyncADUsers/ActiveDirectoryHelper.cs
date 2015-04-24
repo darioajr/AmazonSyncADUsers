@@ -29,23 +29,27 @@ namespace AmazonSyncADUsers
                 searcher.SearchScope = SearchScope.Subtree;
                 searcher.Filter = LDAPFind;
 
-                string nome;
+                string userName;
 
                 foreach (SearchResult sResultSet in searcher.FindAll())
                 {
-                    nome = "";
-                    nome = GetProperty(sResultSet, "sAMAccountName");
+                    userName = "";
+                    userName = GetProperty(sResultSet, "sAMAccountName");
 
-                    if (nome == null)
+                    if (userName == null)
                         continue;
 
-                    users.Add(nome);
+                    users.Add(userName);
                 }
                 entry.Close();
 
                 return true;
             }
-            catch (Exception e) { throw; }
+            catch (Exception e) 
+            {
+                //TODO: Implement log
+                throw; 
+            }
         }
 
         public static Hashtable GetUserAttributes(string user)
@@ -70,6 +74,7 @@ namespace AmazonSyncADUsers
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
             return table;
@@ -87,6 +92,7 @@ namespace AmazonSyncADUsers
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
         }

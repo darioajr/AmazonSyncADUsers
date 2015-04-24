@@ -29,8 +29,6 @@ namespace AmazonSyncADUsers
         {
             try
             {
-                //TODO: Receber usuario e email
-                //é feio mais eu fiz isso aqui, pra evitar esforço extra, futuramente será corrigido (será?)
                 var userAD = ActiveDirectoryHelper.GetUserPrincipal(userName);
                 var userEmail = userAD.EmailAddress;
                 var userDisplayName = userAD.DisplayName;
@@ -41,6 +39,7 @@ namespace AmazonSyncADUsers
                             userEmail : 
                             string.Format("{0}, {1}", userEmail, AdministratorEmail));
 
+                // Connect to Amazon IAM
                 var iamClient = AWSClientFactory.CreateAmazonIdentityManagementServiceClient();
 
                 // Create the IAM user
@@ -49,6 +48,7 @@ namespace AmazonSyncADUsers
                     UserName = userName
                 }).User;
 
+                // Add the user in the group
                 iamClient.AddUserToGroup(new AddUserToGroupRequest
                 {
                     UserName = userName,
@@ -63,17 +63,19 @@ namespace AmazonSyncADUsers
 
                 var message = string.Format(MAILMessage, userDisplayName, userName, accessKey.AccessKeyId, accessKey.SecretAccessKey);
    
-                //envia email para o administrador e usuário
+                // Send e-mail to administrator and user
                 SendMail.EmailTo(email, MAILSubject, message, attachment);
 
                 return true;
             }
             catch (Amazon.S3.AmazonS3Exception ex)
             {
+                //TODO: Implement log
                 throw;
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
         }
@@ -94,10 +96,12 @@ namespace AmazonSyncADUsers
             }
             catch (Amazon.S3.AmazonS3Exception ex)
             {
+                //TODO: Implement log
                 throw;
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
         }
@@ -118,10 +122,12 @@ namespace AmazonSyncADUsers
             }
             catch (Amazon.S3.AmazonS3Exception ex)
             {
+                //TODO: Implement log
                 throw;
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
         }
@@ -162,10 +168,12 @@ namespace AmazonSyncADUsers
             }
             catch (Amazon.S3.AmazonS3Exception ex)
             {
+                //TODO: Implement log
                 throw;
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
         }
@@ -197,10 +205,12 @@ namespace AmazonSyncADUsers
             }
             catch (Amazon.S3.AmazonS3Exception ex)
             {
+                //TODO: Implement log
                 throw;
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
         }
@@ -223,10 +233,12 @@ namespace AmazonSyncADUsers
             }
             catch (Amazon.S3.AmazonS3Exception ex)
             {
+                //TODO: Implement log
                 throw;
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
         }
@@ -250,11 +262,12 @@ namespace AmazonSyncADUsers
             {
                 if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
                     return false;
-
+                //TODO: Implement log
                 throw;
             }
             catch (Exception e)
             {
+                //TODO: Implement log
                 throw;
             }
         }
